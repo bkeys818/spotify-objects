@@ -1,0 +1,19 @@
+{
+    "name": "@types/spotify-objects",
+    "description": "Typed objects defined by the Spotify API",
+    "version": "0.0.1",
+    "author": {
+        "name": "Ben Keys",
+        "url": "https://github.com/bkeys818"
+    },
+    "license": "MIT",
+    "keywords": [
+        "spotify",
+        "spotify api",
+        "spotify web api",
+        "typescript",
+        "definition"
+    ],
+    "files": ["types"],
+    "types": "types"
+}
