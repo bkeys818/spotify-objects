@@ -4,7 +4,6 @@
         "isolatedModules": true,
         "target": "es6",
         "noEmit": true,
-        "typeRoots": ["node_modules/@types", "types"],
 
         "strict": true,
 
@@ -13,7 +12,7 @@
         "moduleResolution": "node",
         "esModuleInterop": true
     },
-    "include": ["types", "tests"],
+    "include": ["types", "tests", "authorize.ts"],
 
     "ts-node": { "files": true }
 }
