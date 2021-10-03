@@ -14,6 +14,11 @@
         "typescript",
         "definition"
     ],
-    "files": ["types"],
-    "types": "types"
+    "files": [
+        "types"
+    ],
+    "types": "types",
+    "dependencies": {
+        "typescript": "^4.4.3"
+    }
 }
