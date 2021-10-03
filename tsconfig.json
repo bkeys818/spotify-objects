@@ -1,0 +1,19 @@
+{
+    "compilerOptions": {
+        "module": "commonjs",
+        "isolatedModules": true,
+        "target": "es6",
+        "noEmit": true,
+        "typeRoots": ["node_modules/@types", "types"],
+
+        "strict": true,
+
+        "baseUrl": "./",
+        "forceConsistentCasingInFileNames": true,
+        "moduleResolution": "node",
+        "esModuleInterop": true
+    },
+    "include": ["types", "tests"],
+
+    "ts-node": { "files": true }
+}
