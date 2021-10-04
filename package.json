@@ -20,5 +20,13 @@
     "types": "types",
     "dependencies": {
         "typescript": "^4.4.3"
+    },
+    "devDependencies": {
+        "@types/node": "^16.10.2",
+        "@types/node-fetch": "^2.5.12",
+        "dotenv": "^10.0.0",
+        "node-fetch": "^2.6.5",
+        "open": "^8.2.1",
+        "ts-node": "^10.2.1"
     }
 }
