@@ -28,5 +28,8 @@
         "node-fetch": "^2.6.5",
         "open": "^8.2.1",
         "ts-node": "^10.2.1"
+    },
+    "scripts": {
+        "update-data": "ts-node responses/fetch-data"
     }
 }
