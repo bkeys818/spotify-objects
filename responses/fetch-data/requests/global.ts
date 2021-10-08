@@ -17,7 +17,7 @@ export async function sendRequest(props: {
     endpoint: string
     method?: 'GET' | 'POST' | 'PUT' | 'DELETE'
     query?: UrlDict
-    body?: UrlDict
+    body?: any
     application_json?: true
 }) {
     const url = new URL('https://api.spotify.com/v1/' + props.endpoint)
@@ -39,21 +39,15 @@ export async function sendRequest(props: {
             ...init.headers,
             'Content-Type': 'application/json',
         }
-    if (props.body) {
-        const params = new URLSearchParams()
-        for (const key in props.body) {
-            params.set(key, toString(props.body[key]))
-        }
-        init.body = params.toString()
-    }
+    if (props.body) init.body = JSON.stringify(props.body)
 
     const res = await fetch(url.href, init)
     if (res.ok) {
-        try {
-            return await res.json()
-        } catch {
-            return null
-        }
+        if (res.status != 204)
+            try {
+                return await res.json()
+            } catch {}
+        return null
     } else {
         let msg: string
         try {

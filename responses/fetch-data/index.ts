@@ -1,7 +1,7 @@
 import authorize from '../../authorize'
 import { writeFileSync, readFileSync } from 'fs'
 import * as Requests from './requests/methods'
-import { basicReq } from './requests'
+import { basicReq, complexRes } from './requests'
 
 export const dataPath = 'responses/data.json'
 if (module.id == '.') updateData()
@@ -10,6 +10,7 @@ export default async function updateData() {
     await authorize()
     const responses: Responses = {
         ...(await basicRes()),
+        ...(await complexRes())
     }
     const str = JSON.stringify(responses)
     writeFileSync(dataPath, str)
@@ -25,11 +26,11 @@ async function basicRes() {
         )
     ).map((value, i) => [keys[i], value] as const)
     return Object.fromEntries(responses) as {
-        [key in BasicReqName]: Reponse<typeof basicReq[key]>
+        [key in BasicReqName]: Response<typeof basicReq[key]>
     }
     type BasicReqName = keyof typeof basicReq
     type BasicResponses = {
-        [key in BasicReqName]: Reponse<typeof basicReq[key]>
+        [key in BasicReqName]: Response<typeof basicReq[key]>
     }[BasicReqName]
 }
 
@@ -52,11 +53,11 @@ export async function runSafely<T>(
 }
 
 // #region types
-type RequestNames = Exclude<keyof typeof Requests, VoidRequests>
+type RequestName = Exclude<keyof typeof Requests, VoidRequests>
 type Unwrap<P> = P extends Promise<infer T> ? T : never
-type Reponse<F extends (...args: any[]) => any> = Unwrap<ReturnType<F>>
+export type Response<F extends (...args: any[]) => any> = Unwrap<ReturnType<F>>
 type Responses = {
-    [key in RequestNames]: Reponse<typeof Requests[key]> | string | undefined
+    [key in RequestName]: Response<typeof Requests[key]> | string | undefined
 }
 // prettier-ignore
 type VoidRequests = 'followPlaylist' | 'unfollowPlaylist' | 'followArtistsOrUsers' | 'unfollowArtistsOrUsers' | 'saveAlbumsForCurrentUser' | 'removeAlbumsForCurrentUser' | 'saveTracksForCurrentUser' | 'removeTracksForCurrentUser' | 'saveEpisodesForCurrentUser' | 'removeEpisodesForCurrentUser' | 'saveShowsForCurrentUser' | 'removeShowsForCurrentUser' | 'transferUserPlayback' | 'startOrResumeUserPlayback' | 'pauseUserPlayback' | 'skipUserPlaybackToNextTrack' | 'skipUserPlaybackToPreviousTrack' | 'seekToPositionInCurrentlyPlayingTrack' | 'setRepeatModeOnUserPlayback' | 'setVolumeForUserPlayback' | 'toggleShuffleForUserPlayback' | 'addItemToQueue' | 'changePlaylistDetails' | 'uploadCustomPlaylistCoverImage'
