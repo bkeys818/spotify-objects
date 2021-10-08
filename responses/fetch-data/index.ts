@@ -1,0 +1,76 @@
+import authorize from '../../authorize'
+import { writeFileSync, readFileSync } from 'fs'
+import * as Requests from './requests/methods'
+import { basicReq, complexRes } from './requests'
+
+export const dataPath = 'responses/data.json'
+if (module.id == '.') updateData()
+
+export default async function updateData() {
+    await authorize()
+    const responses: Responses = {
+        ...(await basicRes()),
+        ...(await complexRes()),
+    }
+    let key: RequestName
+    for (key in responses) {
+        if (responses[key] === undefined) delete responses[key]
+    }
+    const str = JSON.stringify(responses)
+    writeFileSync(dataPath, str)
+}
+
+async function basicRes() {
+    const keys = Object.keys(basicReq) as BasicReqName[]
+    const responses = (
+        await Promise.all(
+            Object.values(basicReq).map((func) =>
+                runSafely<BasicResponses, []>(func)
+            )
+        )
+    ).map((value, i) => [keys[i], value] as const)
+    return Object.fromEntries(responses) as {
+        [key in BasicReqName]:
+            | Response<typeof basicReq[key]>
+            | string
+            | undefined
+    }
+    type BasicReqName = keyof typeof basicReq
+    type BasicResponses = {
+        [key in BasicReqName]: Response<typeof basicReq[key]>
+    }[BasicReqName]
+}
+
+export async function runSafely<T, P extends any[]>(
+    method: (...args: P) => Promise<T>,
+    ...params: P
+): Promise<T | string | undefined> {
+    try {
+        return await method(...params)
+    } catch (err) {
+        let msg: string
+        if (err instanceof Error) msg = err.message
+        else if (typeof err == 'string') msg = err
+        else throw err
+        if (dataContains(method.name as RequestName))
+            console.warn(`Error at ${method.name}: ${msg}`)
+        else return msg
+    }
+}
+
+let oldData: any
+export function dataContains(type: RequestName): boolean {
+    if (!oldData) oldData = JSON.parse(readFileSync(dataPath, 'utf-8'))
+    return type in oldData
+}
+
+// #region types
+type RequestName = Exclude<keyof typeof Requests, VoidRequests>
+type Unwrap<P> = P extends Promise<infer T> ? T : never
+export type Response<F extends (...args: any[]) => any> = Unwrap<ReturnType<F>>
+export type Responses = {
+    [key in RequestName]: Response<typeof Requests[key]> | string | undefined
+}
+// prettier-ignore
+type VoidRequests = 'followPlaylist' | 'unfollowPlaylist' | 'followArtistsOrUsers' | 'unfollowArtistsOrUsers' | 'saveAlbumsForCurrentUser' | 'removeAlbumsForCurrentUser' | 'saveTracksForCurrentUser' | 'removeTracksForCurrentUser' | 'saveEpisodesForCurrentUser' | 'removeEpisodesForCurrentUser' | 'saveShowsForCurrentUser' | 'removeShowsForCurrentUser' | 'transferUserPlayback' | 'startOrResumeUserPlayback' | 'pauseUserPlayback' | 'skipUserPlaybackToNextTrack' | 'skipUserPlaybackToPreviousTrack' | 'seekToPositionInCurrentlyPlayingTrack' | 'setRepeatModeOnUserPlayback' | 'setVolumeForUserPlayback' | 'toggleShuffleForUserPlayback' | 'addItemToQueue' | 'changePlaylistDetails' | 'uploadCustomPlaylistCoverImage'
+// #endregion
