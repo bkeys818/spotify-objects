@@ -1,6 +1,7 @@
-import * as Requests from './requests/methods'
 import authorize from '../../authorize'
 import { writeFileSync, readFileSync } from 'fs'
+import * as Requests from './requests/methods'
+import { basicReq } from './requests'
 
 export const dataPath = 'responses/data.json'
 if (module.id == '.') updateData()
@@ -8,10 +9,28 @@ if (module.id == '.') updateData()
 export default async function updateData() {
     await authorize()
     const responses: Responses = {
-
+        ...(await basicRes()),
     }
     const str = JSON.stringify(responses)
     writeFileSync(dataPath, str)
+}
+
+async function basicRes() {
+    const keys = Object.keys(basicReq) as BasicReqName[]
+    const responses = (
+        await Promise.all(
+            Object.values(basicReq).map((func) =>
+                runSafely<BasicResponses>(func)
+            )
+        )
+    ).map((value, i) => [keys[i], value] as const)
+    return Object.fromEntries(responses) as {
+        [key in BasicReqName]: Reponse<typeof basicReq[key]>
+    }
+    type BasicReqName = keyof typeof basicReq
+    type BasicResponses = {
+        [key in BasicReqName]: Reponse<typeof basicReq[key]>
+    }[BasicReqName]
 }
 
 let oldData: any
