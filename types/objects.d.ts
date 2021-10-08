@@ -255,7 +255,7 @@ export interface CurrentlyPlaying {
     /** If something is currently playing, return `true`. */
     is_playing: boolean
     /** The currently playing track or episode. Can be `null`. */
-    item: Track | null
+    item: Track | Episode | null
     /** Progress into the currently playing track or episode. Can be `null`. */
     progress_ms: number | null
     /** Unix Millisecond Timestamp when data was fetched. */
