@@ -1,4 +1,4 @@
-declare interface Token {
+export interface Token {
     /** An access token that can be provided in subsequent calls, for example to Spotify Web API services. */
     access_token: string
     /** How the access token may be used. */
@@ -9,13 +9,13 @@ declare interface Token {
     scope?: Scope[]
 }
 
-declare interface RefreshToken extends Token {
+export interface RefreshToken extends Token {
     /** A token that can be sent to the Spotify Accounts service in place of an authorization code. */
     refresh_token: string
 }
 
 /** Scopes enable your application to access specific API endpoints on behalf of a user. The set of scopes you pass in your call determines the access permissions that the user is required to grant. */
-declare type Scope =
+export type Scope =
     | 'ugc-image-upload'
     | 'user-read-recently-played'
     | 'user-top-read'
