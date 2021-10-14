@@ -89,22 +89,22 @@ export const getFollowingStateForArtistsOrUsers = () => sendRequest({
 // library
 export const getCurrentUserSavedAlbums = () => sendRequest({ endpoint: `me/albums` })
 export const checkCurrentUserSavedAlbums = () => sendRequest({
-    endpoint: `me/albums`,
+    endpoint: `me/albums/contains`,
     query: { ids: albumIds },
 })
 export const getCurrentUserSavedTracks = () => sendRequest({ endpoint: `me/tracks` })
 export const checkCurrentUserSavedTracks = () => sendRequest({
-    endpoint: `me/tracks`,
+    endpoint: `me/tracks/contains`,
     query: { ids: trackIds },
 })
 export const getCurrentUserSavedEpisodes = () => sendRequest({ endpoint: `me/episodes` })
 export const checkCurrentUserSavedEpisodes = () => sendRequest({
-    endpoint: `me/episodes`,
+    endpoint: `me/episodes/contains`,
     query: { ids: episodeIds },
 })
 export const getCurrentUserSavedShows = () => sendRequest({ endpoint: `me/shows` })
 export const checkCurrentUserSavedShows = () => sendRequest({
-    endpoint: `me/shows`,
+    endpoint: `me/shows/contains`,
     query: { ids: showIds },
 })
 
