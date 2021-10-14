@@ -34,6 +34,7 @@
         "typescript": "^4.4.4"
     },
     "scripts": {
-        "update-data": "ts-node responses/fetch-data"
+        "update-data": "ts-node responses/fetch-data",
+        "test": "jest"
     }
 }
