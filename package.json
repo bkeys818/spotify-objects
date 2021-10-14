@@ -36,6 +36,7 @@
     },
     "scripts": {
         "update-data": "ts-node responses/fetch-data",
+        "postupdate-data": "prettier --write responses/data.json",
         "test": "jest"
     }
 }
