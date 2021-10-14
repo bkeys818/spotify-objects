@@ -55,7 +55,7 @@ export interface Artist extends SimplifiedArtist {
 }
 export interface AudioAnalysis {
     meta: {
-        analyzer_version: `${number}.${number}.${number}`
+        analyzer_version: string
         platform: string
         detailed_status: string
         status_code: number
@@ -265,9 +265,14 @@ export interface Cursor {
     /** The cursor to use as key to find the next page of items. */
     after: string | null
 }
-export interface CursorPaging<T> extends Omit<Paging<T>, 'offset' | 'previous'> {
+export interface CursorPaging<T> {
     /** The cursors used to find the next set of items. */
     cursors: Cursor
+    href: Paging<T>['href']
+    items: Paging<T>['items']
+    limit: Paging<T>['limit']
+    next: Paging<T>['next']
+    total: Paging<T>['total']
 }
 export interface Device {
     /** The device ID. This may be `null`. */
@@ -546,11 +551,7 @@ export interface SimplifiedAlbum extends Context<'album'> {
     /** The field is present when getting an artist’s albums. Possible values are “album”, “single”, “compilation”, “appears_on”. Compare to album_type this field represents relationship between the artist and the album. */
     album_group?: 'album' | 'single' | 'compilation' | 'appears_on'
     /** The type of the album: one of “album”, “single”, or “compilation”. */
-    album_type:
-        | 'album'
-        | 'single'
-        | 'compilation'
-        | Uppercase<'album' | 'single' | 'compilation'>
+    album_type: 'album' | 'single' | 'compilation'
     /** The artists of the album. Each artist object includes a link in `href` to more detailed information about the artist. */
     artists: SimplifiedArtist[]
     /**
