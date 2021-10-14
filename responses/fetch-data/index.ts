@@ -65,7 +65,7 @@ export function dataContains(type: RequestName): boolean {
 }
 
 // #region types
-type RequestName = Exclude<keyof typeof Requests, VoidRequests>
+export type RequestName = Exclude<keyof typeof Requests, VoidRequests>
 type Unwrap<P> = P extends Promise<infer T> ? T : never
 export type Response<F extends (...args: any[]) => any> = Unwrap<ReturnType<F>>
 export type Responses = {
