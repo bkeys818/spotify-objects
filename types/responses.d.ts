@@ -84,10 +84,10 @@ export type getUserTopArtistsAndTracks<T extends 'artists' | 'tracks'> = Paging<
     T extends 'artists' ? Artist : Track
 >
 // Player
-export type getInformationAboutUserCurrentPlayback = CurrentlyPlayingContext
+export type getInformationAboutUserCurrentPlayback = CurrentlyPlayingContext | void
 export type transferUserPlayback = void
 export type getUserAvailableDevices = { devices: Device[] }
-export type getUserCurrentlyPlayingTrack = CurrentlyPlaying
+export type getUserCurrentlyPlayingTrack = CurrentlyPlaying | void
 export type startOrResumeUserPlayback = void
 export type pauseUserPlayback = void
 export type skipUserPlaybackToNextTrack = void
@@ -113,7 +113,7 @@ export type uploadCustomPlaylistCoverImage = void
 // Search
 export type searchForItem<T extends SearchKeys | SearchKeys[]> =
     SearchResponse<T>
-interface ResponseObject {
+interface SearchResponseObject {
     albums: Paging<SimplifiedAlbum>
     artists: Paging<Artist>
     playlists: Paging<SimplifiedPlaylist>
@@ -121,11 +121,11 @@ interface ResponseObject {
     shows: Paging<SimplifiedShow>
     episodes: Paging<SimplifiedEpisode>
 }
-type SearchKeys = keyof ResponseObject
+type SearchKeys = keyof SearchResponseObject
 type SearchResponse<T extends SearchKeys | SearchKeys[]> = T extends SearchKeys
-    ? Pick<ResponseObject, T>
+    ? Pick<SearchResponseObject, T>
     : T extends SearchKeys[]
-    ? Pick<ResponseObject, T[number]>
+    ? Pick<SearchResponseObject, T[number]>
     : never
 // Shows
 export type getMultipleShows = { shows: SimplifiedShow }
