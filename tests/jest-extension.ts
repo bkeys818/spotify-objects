@@ -19,7 +19,7 @@ function toPass<T>(
     })
     msg += '\n\n'
     if (validation.errors) {
-        const errors = validation.errors.map((error) => {
+        const errors = validation.errors.map(error => {
             const newError: typeof error & { instance?: any } = error
             try {
                 const instance = getInstance(received, error.instancePath)

@@ -84,7 +84,8 @@ export type getUserTopArtistsAndTracks<T extends 'artists' | 'tracks'> = Paging<
     T extends 'artists' ? Artist : Track
 >
 // Player
-export type getInformationAboutUserCurrentPlayback = CurrentlyPlayingContext | void
+export type getInformationAboutUserCurrentPlayback =
+    CurrentlyPlayingContext | void
 export type transferUserPlayback = void
 export type getUserAvailableDevices = { devices: Device[] }
 export type getUserCurrentlyPlayingTrack = CurrentlyPlaying | void

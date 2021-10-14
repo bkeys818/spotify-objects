@@ -54,7 +54,7 @@ const complexRequest = {
             endpoint: `playlists/${playlistId}/tracks`,
             method: 'DELETE',
             body: {
-                tracks: trackUris.map((uri) => ({ uri: uri })),
+                tracks: trackUris.map(uri => ({ uri: uri })),
                 snapshot_id: snapshotId,
             },
         }),
@@ -89,7 +89,7 @@ async function playlistResponses(
     }
 
     const playlistId = responses.createPlaylist.id
-    const trackUris = trackIds.map((id) => `spotify:track:${id}` as const)
+    const trackUris = trackIds.map(id => `spotify:track:${id}` as const)
 
     responses.addItemsToPlaylist = await runSafely(
         complexRequest.addItemsToPlaylist,
@@ -129,7 +129,7 @@ async function playlistResponses(
         if (reason instanceof Error) reason = reason.message
         console.warn(
             `Warning: Coundn't delete test playlist` +
-            `  Internal Error: ${reason}`
+                `  Internal Error: ${reason}`
         )
     })
 
