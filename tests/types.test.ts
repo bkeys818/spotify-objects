@@ -1,5 +1,5 @@
 import responses from '../responses'
-import { ajv, idFor } from './schemas'
+import { ajv, idFor } from '../jest-extension/schemas'
 
 const responseNames = Object.keys(responses) as (keyof typeof responses)[]
 test.concurrent.each(responseNames)('Schema for %s responses', responseName => {

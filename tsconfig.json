@@ -12,7 +12,14 @@
         "moduleResolution": "node",
         "esModuleInterop": true
     },
-    "include": ["types", "tests", "responses", "global", "authorize.ts"],
+    "include": [
+        "types",
+        "tests",
+        "responses",
+        "jest-extension",
+        "global",
+        "authorize.ts"
+    ],
 
     "ts-node": { "files": true }
 }
