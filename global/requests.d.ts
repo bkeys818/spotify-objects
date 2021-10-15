@@ -1,4 +1,4 @@
-import { Responses } from '../../../types'
+import type { Responses } from '../types'
 // Albums
 export function getMultipleAlbums(
     ...args: any[]

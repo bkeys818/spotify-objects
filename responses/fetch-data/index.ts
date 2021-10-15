@@ -1,6 +1,6 @@
 import authorize from '../../authorize'
 import { writeFileSync, readFileSync } from 'fs'
-import * as Requests from './requests/methods'
+import { ResponseName, ResponseFor } from '../../global'
 import { basicReq, complexRes } from './requests'
 
 export const dataPath = 'responses/data.json'
@@ -12,7 +12,7 @@ export default async function updateData() {
         ...(await basicRes()),
         ...(await complexRes()),
     }
-    let key: RequestName
+    let key: ResponseName
     for (key in responses) {
         if (responses[key] === undefined) delete responses[key]
     }
@@ -25,20 +25,15 @@ async function basicRes() {
     const responses = (
         await Promise.all(
             Object.values(basicReq).map((func) =>
-                runSafely<BasicResponses, []>(func)
+                runSafely<ResponseFor<BasicReqName>, []>(func)
             )
         )
     ).map((value, i) => [keys[i], value] as const)
-    return Object.fromEntries(responses) as {
-        [key in BasicReqName]:
-            | Response<typeof basicReq[key]>
-            | string
-            | undefined
-    }
+    return Object.fromEntries(responses) as BasicResponses
     type BasicReqName = keyof typeof basicReq
     type BasicResponses = {
-        [key in BasicReqName]: Response<typeof basicReq[key]>
-    }[BasicReqName]
+        [key in BasicReqName]: ResponseFor<key>
+    }
 }
 
 export async function runSafely<T, P extends any[]>(
@@ -52,25 +47,18 @@ export async function runSafely<T, P extends any[]>(
         if (err instanceof Error) msg = err.message
         else if (typeof err == 'string') msg = err
         else throw err
-        if (dataContains(method.name as RequestName))
+        if (dataContains(method.name as ResponseName))
             console.warn(`Error at ${method.name}: ${msg}`)
         else return msg
     }
 }
 
 let oldData: any
-export function dataContains(type: RequestName): boolean {
+export function dataContains(type: ResponseName): boolean {
     if (!oldData) oldData = JSON.parse(readFileSync(dataPath, 'utf-8'))
     return type in oldData
 }
 
-// #region types
-export type RequestName = Exclude<keyof typeof Requests, VoidRequests>
-type Unwrap<P> = P extends Promise<infer T> ? T : never
-export type Response<F extends (...args: any[]) => any> = Unwrap<ReturnType<F>>
 export type Responses = {
-    [key in RequestName]: Response<typeof Requests[key]> | string | undefined
+    [key in ResponseName]: ResponseFor<key> | string | undefined
 }
-// prettier-ignore
-type VoidRequests = 'followPlaylist' | 'unfollowPlaylist' | 'followArtistsOrUsers' | 'unfollowArtistsOrUsers' | 'saveAlbumsForCurrentUser' | 'removeAlbumsForCurrentUser' | 'saveTracksForCurrentUser' | 'removeTracksForCurrentUser' | 'saveEpisodesForCurrentUser' | 'removeEpisodesForCurrentUser' | 'saveShowsForCurrentUser' | 'removeShowsForCurrentUser' | 'transferUserPlayback' | 'startOrResumeUserPlayback' | 'pauseUserPlayback' | 'skipUserPlaybackToNextTrack' | 'skipUserPlaybackToPreviousTrack' | 'seekToPositionInCurrentlyPlayingTrack' | 'setRepeatModeOnUserPlayback' | 'setVolumeForUserPlayback' | 'toggleShuffleForUserPlayback' | 'addItemToQueue' | 'changePlaylistDetails' | 'uploadCustomPlaylistCoverImage'
-// #endregion

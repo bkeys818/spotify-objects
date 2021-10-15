@@ -1,7 +1,7 @@
-import type * as Requests from './methods'
+import type { ResponseFor } from '../../../global'
 import type { Responses, Objects } from '../../../types'
 import { sendRequest, trackIds } from './global'
-import { Response, runSafely, dataContains } from '..'
+import { runSafely, dataContains } from '..'
 import { basicReq } from '.'
 
 const complexRequest = {
@@ -74,10 +74,17 @@ export async function complexRes(): Promise<ComplexResponses> {
     }
 }
 
-async function playlistResponses(
-    userId: string
-): Promise<ComplexPlaylistResponses> {
-    const responses: Partial<ComplexPlaylistResponses> = {}
+async function playlistResponses(userId: string) {
+    type ComplexPlaylistResponses = Omit<
+        ComplexResponses,
+        'getInformationAboutUserCurrentPlayback' | 'getUserCurrentlyPlayingTrack'
+    >
+    const responses: ComplexPlaylistResponses = {
+        createPlaylist: undefined,
+        addItemsToPlaylist: undefined,
+        reorderOrReplacePlaylistItems: undefined,
+        removeItemsFromPlaylist: undefined,
+    }
 
     responses.createPlaylist = await runSafely(
         complexRequest.createPlaylist,
@@ -133,12 +140,10 @@ async function playlistResponses(
         )
     })
 
-    return responses as Required<typeof responses>
+    return responses
 }
 
-async function playerResponses(
-    isPremium: boolean
-): Promise<ComplexPlayerResponses> {
+async function playerResponses(isPremium: boolean) {
     const currentPlayback =
         await complexRequest.getInformationAboutUserCurrentPlayback()
 
@@ -201,16 +206,5 @@ function errorFrom<T extends ComplexResponses>(
 
 type ComplexRequestNames = keyof typeof complexRequest
 type ComplexResponses = {
-    [key in ComplexRequestNames]:
-        | Response<typeof Requests[key]>
-        | string
-        | undefined
+    [key in ComplexRequestNames]: ResponseFor<key> | string | undefined
 }
-type ComplexPlaylistResponses = Omit<
-    ComplexResponses,
-    'getInformationAboutUserCurrentPlayback' | 'getUserCurrentlyPlayingTrack'
->
-type ComplexPlayerResponses = Pick<
-    ComplexResponses,
-    'getInformationAboutUserCurrentPlayback' | 'getUserCurrentlyPlayingTrack'
->
