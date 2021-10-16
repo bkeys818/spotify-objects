@@ -239,13 +239,13 @@ export interface Copyright {
 }
 export interface CurrentlyPlayingContext extends CurrentlyPlaying {
     /** Allows to update the user declare interface based on which playback actions are available within the current context. */
-    actions: Disallows
+    actions: { disallows: Disallows }
     /** The device that is currently active. */
     device: Device
     /** If something is currently playing, return `true`. */
     repeat_state: string
     /** If shuffle is on or off. */
-    shuffle_state: string
+    shuffle_state: boolean
 }
 export interface CurrentlyPlaying {
     /** A Context Object. Can be `null`. */
@@ -264,6 +264,8 @@ export interface CurrentlyPlaying {
 export interface Cursor {
     /** The cursor to use as key to find the next page of items. */
     after: string | null
+    /** @undocumented */
+    before?: string | null
 }
 export interface CursorPaging<T> {
     /** The cursors used to find the next set of items. */
@@ -386,11 +388,11 @@ export interface Paging<T> {
 }
 export interface PlayHistory {
     /** The context the track was played from. */
-    context: Context<'album'> | Context<'playlist'>
+    context: Context<'album'> | Context<'playlist'> | null
     /** The date and time the track was played. */
     played_at: string
     /** The track the user listened to. */
-    track: SimplifiedTrack
+    track: Track
 }
 export interface PlayerError {
     /** A short description of the cause of the error. */
@@ -499,7 +501,7 @@ export interface RecommendationSeed {
     /** The number of tracks available after relinking for regional availability. */
     afterRelinkingSize: number
     /** A link to the full track or artist data for this seed. For tracks this will be a link to a {@link Track}. For artists a link to an {@link Artist}. For genre seeds, this value will be `null`. */
-    href: string
+    href: string | null
     /** The id used to select this seed. This will be the same as the string used in the `seed_artists`, `seed_tracks` or `seed_genres` parameter. */
     id: string
     /** The number of recommended tracks available for this seed. */
@@ -551,7 +553,13 @@ export interface SimplifiedAlbum extends Context<'album'> {
     /** The field is present when getting an artist’s albums. Possible values are “album”, “single”, “compilation”, “appears_on”. Compare to album_type this field represents relationship between the artist and the album. */
     album_group?: 'album' | 'single' | 'compilation' | 'appears_on'
     /** The type of the album: one of “album”, “single”, or “compilation”. */
-    album_type: 'album' | 'single' | 'compilation'
+    album_type:
+        | 'album'
+        | 'single'
+        | 'compilation'
+        | 'ALBUM'
+        | 'SINGLE'
+        | 'COMPILATION'
     /** The artists of the album. Each artist object includes a link in `href` to more detailed information about the artist. */
     artists: SimplifiedArtist[]
     /**

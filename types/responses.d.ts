@@ -4,13 +4,13 @@ import {
     AudioAnalysis,
     AudioFeatures,
     Category,
-    CurrentlyPlaying,
     CurrentlyPlayingContext,
     CursorPaging,
     Device,
     Episode,
     Image,
     Paging,
+    PlayHistory,
     Playlist,
     PlaylistTrack,
     PrivateUser,
@@ -31,7 +31,7 @@ import {
 // Albums
 export type getMultipleAlbums = { albums: (Album | null)[] }
 export type getAlbum = Album
-export type getAlbumTracks = Paging<Track>
+export type getAlbumTracks = Paging<SimplifiedTrack>
 // Artists
 export type getMultipleArtists = { artists: (Artist | null)[] }
 export type getArtist = Artist
@@ -88,7 +88,7 @@ export type getInformationAboutUserCurrentPlayback =
     CurrentlyPlayingContext | void
 export type transferUserPlayback = void
 export type getUserAvailableDevices = { devices: Device[] }
-export type getUserCurrentlyPlayingTrack = CurrentlyPlaying | void
+export type getUserCurrentlyPlayingTrack = CurrentlyPlayingContext | void
 export type startOrResumeUserPlayback = void
 export type pauseUserPlayback = void
 export type skipUserPlaybackToNextTrack = void
@@ -97,7 +97,10 @@ export type seekToPositionInCurrentlyPlayingTrack = void
 export type setRepeatModeOnUserPlayback = void
 export type setVolumeForUserPlayback = void
 export type toggleShuffleForUserPlayback = void
-export type getCurrentUserRecentlyPlayedTracks = CursorPaging<SimplifiedTrack>
+export type getCurrentUserRecentlyPlayedTracks = Omit<
+    CursorPaging<PlayHistory>,
+    'total'
+>
 export type addItemToQueue = void
 // Playlists
 export type getListOfCurrentUserPlaylists = Paging<SimplifiedPlaylist>
@@ -129,7 +132,7 @@ type SearchResponse<T extends SearchKeys | SearchKeys[]> = T extends SearchKeys
     ? Pick<SearchResponseObject, T[number]>
     : never
 // Shows
-export type getMultipleShows = { shows: SimplifiedShow }
+export type getMultipleShows = { shows: SimplifiedShow[] }
 export type getShow = Show
 export type getShowEpisodes = Paging<SimplifiedEpisode>
 // Tracks
