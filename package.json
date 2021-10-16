@@ -37,6 +37,7 @@
         "build": "tsc -p src.tsconfig.json",
         "test": "jest",
         "prepublishOnly": "yarn build",
+        "postpublish": "rm -r types",
         "update-data": "ts-node responses/fetch-data",
         "postupdate-data": "prettier --write responses/data.json"
     }
