@@ -34,8 +34,10 @@
         "typescript": "^4.4.4"
     },
     "scripts": {
+        "build": "tsc -p src.tsconfig.json",
+        "test": "jest",
+        "prepublishOnly": "yarn build",
         "update-data": "ts-node responses/fetch-data",
-        "postupdate-data": "prettier --write responses/data.json",
-        "test": "jest"
+        "postupdate-data": "prettier --write responses/data.json"
     }
 }

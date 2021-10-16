@@ -3,11 +3,9 @@
         "module": "commonjs",
         "isolatedModules": true,
         "target": "es6",
-        "noEmit": true,
 
         "strict": true,
 
-        "baseUrl": "./",
         "forceConsistentCasingInFileNames": true,
         "moduleResolution": "node",
         "esModuleInterop": true
@@ -15,7 +13,5 @@
     "include": [
         "src",
         "tests"
-    ],
-
-    "ts-node": { "files": true }
+    ]
 }
