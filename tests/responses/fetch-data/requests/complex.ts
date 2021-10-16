@@ -1,5 +1,5 @@
 import type { ResponseFor } from '../../../global'
-import type { Responses, Objects } from '../../../types'
+import type { Responses, Objects } from '../../../../src'
 import { sendRequest, trackIds } from './global'
 import { runSafely, dataContains } from '..'
 import { basicReq } from '.'

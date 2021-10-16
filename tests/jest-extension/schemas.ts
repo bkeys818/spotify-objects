@@ -22,7 +22,7 @@ function createSchemasForTypes(file: string) {
 }
 
 function schemas() {
-    const schemas = createSchemasForTypes('types/responses.d.ts')
+    const schemas = createSchemasForTypes('src/responses.ts')
     const otherSchemas = createSchemasForTypes(
         'tests/jest-extension/generic-replacements.d.ts'
     )

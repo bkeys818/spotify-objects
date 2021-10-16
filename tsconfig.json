@@ -13,7 +13,7 @@
         "esModuleInterop": true
     },
     "include": [
-        "types",
+        "src",
         "tests"
     ],
 

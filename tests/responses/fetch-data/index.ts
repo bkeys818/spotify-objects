@@ -3,7 +3,7 @@ import { writeFileSync, readFileSync } from 'fs'
 import { ResponseName, ResponseFor } from '../../global'
 import { basicReq, complexRes } from './requests'
 
-export const dataPath = 'responses/data.json'
+export const dataPath = 'tests/responses/data.json'
 if (module.id == '.') updateData()
 
 export default async function updateData() {
