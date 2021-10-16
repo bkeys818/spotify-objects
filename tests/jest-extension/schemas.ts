@@ -1,6 +1,5 @@
 import * as tsj from 'ts-json-schema-generator'
 import Ajv from 'ajv'
-import { writeFileSync } from 'fs'
 
 const tsjConfig: tsj.Config = {
     tsconfig: 'tsconfig.json',
@@ -25,7 +24,7 @@ function createSchemasForTypes(file: string) {
 function schemas() {
     const schemas = createSchemasForTypes('types/responses.d.ts')
     const otherSchemas = createSchemasForTypes(
-        'jest-extension/generic-replacements.d.ts'
+        'tests/jest-extension/generic-replacements.d.ts'
     )
     schemas.definitions = {
         ...schemas.definitions,

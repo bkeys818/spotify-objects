@@ -1,4 +1,4 @@
-import responses from '../responses'
+import responses from './responses'
 
 // const { getUserTopArtistsAndTracks, searchForItem, ...responses } = _responses
 

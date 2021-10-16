@@ -14,11 +14,7 @@
     },
     "include": [
         "types",
-        "tests",
-        "responses",
-        "jest-extension",
-        "global",
-        "authorize.ts"
+        "tests"
     ],
 
     "ts-node": { "files": true }
