@@ -1,73 +1,138 @@
-import type { ValidateFunction } from 'ajv'
-import { prettyPrint } from '@base2/pretty-print-object'
+import { ajv, idFor } from './schemas'
+import type { ResponseName } from '../global'
+import type { ValidateFunction, ErrorObject } from 'ajv'
 
-const prettyPrintConfig: Parameters<typeof prettyPrint>[1] = {
-    indent: '  ',
-    inlineCharacterLimit: 64,
-    singleQuotes: true,
-}
-
-function toPass<T>(
+function toMatchSchemaForType<T>(
     this: jest.MatcherContext,
     received: T,
-    validation: ValidateFunction<T>
-): ReturnType<jest.CustomMatcher> {
-    const pass = validation(received)
-    let msg = this.utils.matcherHint(toPass.name, undefined, 'validation', {
-        isNot: this.isNot,
-        promise: this.promise,
-    })
+    name: ResponseName
+) {
+    const { utils } = this
+    let pass: boolean = false
+    let msg = utils.matcherHint(
+        toMatchSchemaForType.name,
+        undefined,
+        'validation',
+        { isNot: this.isNot, promise: this.promise }
+    )
     msg += '\n\n'
-    if (validation.errors) {
-        const errors = validation.errors.map(error => {
-            const newError: typeof error & { instance?: any } = error
-            try {
-                const instance = getInstance(received, error.instancePath)
-                newError.instance = foldObject(instance)
-            } catch {}
-            return newError
-        })
-        msg += 'Errors: ' + format(prettyPrint(errors, prettyPrintConfig))
-    } else msg += 'Object passed validation.'
+
+    const id = idFor(name)
+    const validate = ajv.getSchema<T>(id)
+
+    if (validate) {
+        pass = validate(received) as boolean
+        let errMsgs: string[]
+        if (validate.errors) {
+            const errorMsg = getErrorHandler(validate, received)
+            const errors = validate.errors
+            if (errors[errors.length - 1].keyword == 'anyOf') {
+                errMsgs = [errorMsg(errors.pop()!)]
+                const tab = '  '
+                errMsgs.push(
+                    ...errors.map(
+                        err =>
+                            tab +
+                            errorMsg(err)
+                                .split('\n')
+                                .join('\n' + tab)
+                    )
+                )
+            } else {
+                errMsgs = validate.errors.map(errorMsg)
+            }
+
+            msg += errMsgs.join('\n\n')
+        } else {
+            msg += 'Error: Value matched schema.'
+        }
+    } else {
+        msg += 'Error: No schema found for type.' + `\n  id: ${id}`
+    }
+
     return {
         pass: pass,
         message: () => msg,
     }
 }
 
-function getInstance(_obj: any, path: string) {
-    if (!path) return _obj
-    let obj = JSON.parse(JSON.stringify(_obj))
-    if (path.startsWith('/')) path = path.slice(1)
-    const steps = path.split('/')
-    for (const step of steps) {
-        if (step in obj) obj = obj[step]
-        else throw new Error(`Couldn't get instance`)
-    }
-    return obj
-}
-
-function foldObject(value: any) {
-    if (value && typeof value == 'object')
-        for (const key in value) {
-            if (Array.isArray(value[key])) value[key] = '___arr___'
-            else if (value[key] && typeof value[key] == 'object')
-                value[key] = '___obj___'
+function getErrorHandler(validate: ValidateFunction, received: any) {
+    return function (error: ErrorObject) {
+        let errMsg = `Error: ${error.message ?? 'unknown'}`
+        if (error.keyword == 'anyOf') return errMsg
+        for (const key in error.params) {
+            errMsg += `\n  ${key}: ${error.params[key]}`
         }
+
+        const schema = error.schemaPath.startsWith('#/definitions/')
+            ? validate.schemaEnv.root.schema
+            : error.schema ?? validate.schema
+        let schemaErr
+        if (error.keyword == 'anyOf') {
+            schemaErr = followPath(schema, error.schemaPath)
+        } else {
+            schemaErr = followPath(schema, error.schemaPath, true)
+        }
+        errMsg +=
+            `\nSchema: ` + (schemaErr ? printObj(schemaErr, 2) : 'unknown')
+
+        const instance = followPath(received, error.instancePath)
+        errMsg += `\nInstance: ` + (instance ? printObj(instance) : 'unknown')
+
+        return errMsg
+    }
+}
+
+function followPath(_value: any, path: string, skipLast = false) {
+    let value = JSON.parse(JSON.stringify(_value))
+    if (!path) return value
+    if (path[0] == '#') path = path.slice(2)
+    else if (path[0] == '/') path = path.slice(1)
+
+    const steps = path.split('/')
+    if (skipLast) steps.pop()
+
+    for (const step of steps) {
+        if (step in value) value = value[step]
+        else return
+    }
+
     return value
 }
 
-function format(value: string) {
-    return value
-        .replace(/'___arr___'/g, '[ ... ]')
-        .replace(/'___obj___'/g, '{ ... }')
+function printObj(obj: any, foldAtLevel = 1): string {
+    foldObject(obj, 1)
+
+    const msg = JSON.stringify(obj, null, 2)
+    return msg
+        .replace(/"___arr___"/g, '[ ... ]')
+        .replace(/"___obj___"/g, '{ ... }')
+        .replace(/"___...___"/g, '...')
+
+    function foldObject(obj: any, level: number) {
+        for (const key in obj) {
+            const value = obj[key]
+            if (Array.isArray(value)) {
+                if (level < foldAtLevel) {
+                    if (value.length > 8) {
+                        obj[key] = [value[0], value[1], value[2]]
+                        obj[key].map(foldObject)
+                        obj[key].push('___...___')
+                    } else foldObject(obj[key], level + 1)
+                } else obj[key] = '___arr___'
+            } else if (typeof value == 'object') {
+                if (level < foldAtLevel) foldObject(obj[key], level + 1)
+                else obj[key] = '___obj___'
+            }
+        }
+    }
 }
 
-expect.extend({ toPass })
+expect.extend({ toMatchSchemaForType })
 declare global {
     namespace jest {
         interface Matchers<R> {
-            toPass<E = any>(validation: ValidateFunction<E>): R
+            toMatchSchemaForType(name: ResponseName): R
         }
     }
 }
