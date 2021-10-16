@@ -28,6 +28,7 @@
         "jest": "^27.2.5",
         "node-fetch": "^2.6.5",
         "open": "^8.2.1",
+        "prettier": "^2.4.1",
         "ts-jest": "^27.0.5",
         "ts-json-schema-generator": "^0.96.0",
         "ts-node": "^10.2.1",
@@ -35,6 +36,7 @@
     },
     "scripts": {
         "update-data": "ts-node responses/fetch-data",
+        "postupdate-data": "prettier --write responses/data.json",
         "test": "jest"
     }
 }

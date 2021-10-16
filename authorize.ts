@@ -96,7 +96,7 @@ function getRefreshToken() {
                     grant_type: 'authorization_code',
                     code: queryObj.code,
                     redirect_uri: redirectUri,
-                }).then((value) => resolve(value))
+                }).then(value => resolve(value))
 
                 res.writeHead(200).end('<script>window.close()</script>')
                 server.close()

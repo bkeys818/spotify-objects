@@ -6,6 +6,6 @@ const config: Config.InitialOptions = {
     verbose: true,
     preset: 'ts-jest',
     testEnvironment: 'node',
-    setupFilesAfterEnv: ['./tests/jest-extension.ts'],
+    setupFilesAfterEnv: ['./jest-extension/index.ts'],
 }
 export default config

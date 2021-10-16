@@ -1,7 +1,7 @@
-import type * as Requests from './methods'
+import type { ResponseFor } from '../../../global'
 import type { Responses, Objects } from '../../../types'
 import { sendRequest, trackIds } from './global'
-import { Response, runSafely, dataContains } from '..'
+import { runSafely, dataContains } from '..'
 import { basicReq } from '.'
 
 const complexRequest = {
@@ -54,7 +54,7 @@ const complexRequest = {
             endpoint: `playlists/${playlistId}/tracks`,
             method: 'DELETE',
             body: {
-                tracks: trackUris.map((uri) => ({ uri: uri })),
+                tracks: trackUris.map(uri => ({ uri: uri })),
                 snapshot_id: snapshotId,
             },
         }),
@@ -74,10 +74,17 @@ export async function complexRes(): Promise<ComplexResponses> {
     }
 }
 
-async function playlistResponses(
-    userId: string
-): Promise<ComplexPlaylistResponses> {
-    const responses: Partial<ComplexPlaylistResponses> = {}
+async function playlistResponses(userId: string) {
+    type ComplexPlaylistResponses = Omit<
+        ComplexResponses,
+        'getInformationAboutUserCurrentPlayback' | 'getUserCurrentlyPlayingTrack'
+    >
+    const responses: ComplexPlaylistResponses = {
+        createPlaylist: undefined,
+        addItemsToPlaylist: undefined,
+        reorderOrReplacePlaylistItems: undefined,
+        removeItemsFromPlaylist: undefined,
+    }
 
     responses.createPlaylist = await runSafely(
         complexRequest.createPlaylist,
@@ -89,7 +96,7 @@ async function playlistResponses(
     }
 
     const playlistId = responses.createPlaylist.id
-    const trackUris = trackIds.map((id) => `spotify:track:${id}` as const)
+    const trackUris = trackIds.map(id => `spotify:track:${id}` as const)
 
     responses.addItemsToPlaylist = await runSafely(
         complexRequest.addItemsToPlaylist,
@@ -129,16 +136,14 @@ async function playlistResponses(
         if (reason instanceof Error) reason = reason.message
         console.warn(
             `Warning: Coundn't delete test playlist` +
-            `  Internal Error: ${reason}`
+                `  Internal Error: ${reason}`
         )
     })
 
-    return responses as Required<typeof responses>
+    return responses
 }
 
-async function playerResponses(
-    isPremium: boolean
-): Promise<ComplexPlayerResponses> {
+async function playerResponses(isPremium: boolean) {
     const currentPlayback =
         await complexRequest.getInformationAboutUserCurrentPlayback()
 
@@ -201,16 +206,5 @@ function errorFrom<T extends ComplexResponses>(
 
 type ComplexRequestNames = keyof typeof complexRequest
 type ComplexResponses = {
-    [key in ComplexRequestNames]:
-        | Response<typeof Requests[key]>
-        | string
-        | undefined
+    [key in ComplexRequestNames]: ResponseFor<key> | string | undefined
 }
-type ComplexPlaylistResponses = Omit<
-    ComplexResponses,
-    'getInformationAboutUserCurrentPlayback' | 'getUserCurrentlyPlayingTrack'
->
-type ComplexPlayerResponses = Pick<
-    ComplexResponses,
-    'getInformationAboutUserCurrentPlayback' | 'getUserCurrentlyPlayingTrack'
->
