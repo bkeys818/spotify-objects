@@ -8,14 +8,17 @@ if (module.id == '.') updateData()
 
 export default async function updateData() {
     await authorize()
-    const responses: Responses = {
+    let responses: Responses = {
         ...(await basicRes()),
         ...(await complexRes()),
     }
     let key: ResponseName
     for (key in responses) {
-        if (responses[key] === undefined) delete responses[key]
+        const noTypeChange = sameType(responses[key], oldData()[key])
+        if (responses[key] === undefined || noTypeChange) delete responses[key]
     }
+    responses = { ...oldData(), ...responses }
+    responses = sortObj(responses)
     const str = JSON.stringify(responses)
     writeFileSync(dataPath, str)
 }
@@ -24,7 +27,7 @@ async function basicRes() {
     const keys = Object.keys(basicReq) as BasicReqName[]
     const responses = (
         await Promise.all(
-            Object.values(basicReq).map((func) =>
+            Object.values(basicReq).map(func =>
                 runSafely<ResponseFor<BasicReqName>, []>(func)
             )
         )
@@ -53,10 +56,57 @@ export async function runSafely<T, P extends any[]>(
     }
 }
 
-let oldData: any
+let _oldData: any
+function oldData() {
+    if (!_oldData) _oldData = JSON.parse(readFileSync(dataPath, 'utf-8'))
+    return _oldData
+}
+
 export function dataContains(type: ResponseName): boolean {
-    if (!oldData) oldData = JSON.parse(readFileSync(dataPath, 'utf-8'))
-    return type in oldData
+    return type in oldData()
+}
+
+function sameType<T>(a: T, b: any): b is T {
+    if (a == null || b == null) return true
+    if (typeof a == typeof b) {
+        if (typeof a == 'object' && typeof b == 'object') {
+            if (Array.isArray(a) && Array.isArray(b)) {
+                const [item1, ...items] = [...a, ...b]
+                return items.every(item => sameType(item1, item))
+            } else {
+                if (sameObjKeys(a, b)) {
+                    for (const key in a) {
+                        if (!sameType(a[key], b[key])) return false
+                    }
+                    return true
+                }
+            }
+            return false
+        }
+        return true
+    }
+    return false
+    function sameObjKeys<K extends string | number | symbol>(
+        a: { [key in K]: any },
+        b: { [key: string | number | symbol]: any }
+    ): b is { [key in K]: any } {
+        const aKeys = Object.keys(a).sort()
+        const bKeys = Object.keys(b).sort()
+        if (aKeys.length !== bKeys.length) return false
+        for (var i = aKeys.length; i--; ) {
+            if (aKeys[i] !== bKeys[i]) return false
+        }
+        return true
+    }
+}
+
+function sortObj(value: any) {
+    const keys = Object.keys(value).sort()
+    const response: any = {}
+    for (const key of keys) {
+        response[key] = value[key]
+    }
+    return response
 }
 
 export type Responses = {
