@@ -38,8 +38,8 @@
         "test": "jest",
         "prepublishOnly": "yarn build",
         "postpublish": "rm -r types",
-        "update-data": "ts-node responses/fetch-data",
-        "postupdate-data": "prettier --write responses/data.json"
+        "update-data": "ts-node tests/responses/fetch-data",
+        "postupdate-data": "prettier --write tests/responses/data.json"
     },
     "np": {
         "message": "🔖 v%s"

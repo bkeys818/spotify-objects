@@ -67,7 +67,7 @@ export function dataContains(type: ResponseName): boolean {
 }
 
 function sameType<T>(a: T, b: any): b is T {
-    if (a == null || b == null) return true
+    if (a === null || b === null) return true
     if (typeof a == typeof b) {
         if (typeof a == 'object' && typeof b == 'object') {
             if (Array.isArray(a) && Array.isArray(b)) {

@@ -12,26 +12,38 @@ import {
     genres,
 } from './global'
 
-// albums
-export const getMultipleAlbums = () =>
+// Albums
+export const getAlbum = () => sendRequest({ endpoint: `albums/${albumIds[0]}` })
+export const getSeveralAlbums = () =>
     sendRequest({
         endpoint: `albums`,
         query: { ids: albumIds },
     })
-export const getAlbum = () => sendRequest({ endpoint: `albums/${albumIds[0]}` })
 export const getAlbumTracks = () =>
     sendRequest({
         endpoint: `albums/${albumIds[0]}/tracks`,
     })
+export const getSavedAlbums = () => sendRequest({ endpoint: `me/albums` })
+export const checkSavedAlbums = () =>
+    sendRequest({
+        endpoint: `me/albums/contains`,
+        query: { ids: albumIds },
+    })
+export const getNewReleases = () =>
+    sendRequest({ endpoint: `browse/new-releases` })
 
-// artists
-export const getMultipleArtists = () =>
+// Artists
+export const getArtist = () =>
+    sendRequest({ endpoint: `artists/${artistIds[0]}` })
+export const getSeveralArtists = () =>
     sendRequest({
         endpoint: `artists`,
         query: { ids: artistIds },
     })
-export const getArtist = () =>
-    sendRequest({ endpoint: `artists/${artistIds[0]}` })
+export const getArtistAlbums = () =>
+    sendRequest({
+        endpoint: `artists/${artistIds[0]}/albums`,
+    })
 export const getArtistTopTracks = () =>
     sendRequest({
         endpoint: `artists/${artistIds[0]}/top-tracks`,
@@ -41,29 +53,65 @@ export const getArtistRelatedArtists = () =>
     sendRequest({
         endpoint: `artists/${artistIds[0]}/related-artists`,
     })
-export const getArtistAlbums = () =>
+
+// Shows
+export const getShow = () => sendRequest({ endpoint: `shows/${showIds[0]}` })
+export const getSeveralShows = () =>
     sendRequest({
-        endpoint: `artists/${artistIds[0]}/albums`,
+        endpoint: `shows`,
+        query: { ids: showIds },
+    })
+export const getShowEpisodes = () =>
+    sendRequest({
+        endpoint: `shows/${showIds[0]}/episodes`,
+    })
+export const getSavedShows = () => sendRequest({ endpoint: `me/shows` })
+export const checkSavedShows = () =>
+    sendRequest({
+        endpoint: `me/shows/contains`,
+        query: { ids: showIds },
     })
 
-// browse
-export const getAllNewReleases = () =>
+// Episodes
+export const getEpisode = () =>
+    sendRequest({ endpoint: `episodes/${episodeIds[0]}` })
+export const getSeveralEpisodes = () =>
     sendRequest({
-        endpoint: `browse/new-releases`,
+        endpoint: `episodes`,
+        query: { ids: episodeIds },
     })
-export const getAllFeaturedPlaylists = () =>
+export const getSavedEpisodes = () => sendRequest({ endpoint: `me/episodes` })
+export const checkSavedEpisodes = () =>
     sendRequest({
-        endpoint: `browse/featured-playlists`,
+        endpoint: `me/episodes/contains`,
+        query: { ids: episodeIds },
     })
-export const getAllCategories = () =>
-    sendRequest({ endpoint: `browse/categories` })
-export const getCategory = () =>
+
+// Tracks
+export const getTrack = () => sendRequest({ endpoint: `tracks/${trackIds[0]}` })
+export const getSeveralTracks = () =>
     sendRequest({
-        endpoint: `browse/categories/${categoryIds[0]}`,
+        endpoint: `tracks`,
+        query: { ids: trackIds },
     })
-export const getCategoryPlaylists = () =>
+export const getSavedTracks = () => sendRequest({ endpoint: `me/tracks` })
+export const checkSavedTracks = () =>
     sendRequest({
-        endpoint: `browse/categories/${categoryIds[0]}/playlists`,
+        endpoint: `me/tracks/contains`,
+        query: { ids: trackIds },
+    })
+export const getTracksAudioFeatures = () =>
+    sendRequest({
+        endpoint: `audio-features`,
+        query: { ids: trackIds },
+    })
+export const getTrackAudioFeatures = () =>
+    sendRequest({
+        endpoint: `audio-features/${trackIds[0]}`,
+    })
+export const getTrackAudioAnalysis = () =>
+    sendRequest({
+        endpoint: `audio-analysis/${trackIds[0]}`,
     })
 export const getRecommendations = () =>
     sendRequest({
@@ -74,109 +122,8 @@ export const getRecommendations = () =>
             seed_tracks: [trackIds[0]],
         },
     })
-export const getRecommendationGenres = () =>
-    sendRequest({
-        endpoint: `recommendations/available-genre-seeds`,
-    })
 
-// episodes
-export const getMultipleEpisodes = () =>
-    sendRequest({
-        endpoint: `episodes`,
-        query: { ids: episodeIds },
-    })
-export const getEpisode = () =>
-    sendRequest({ endpoint: `episodes/${episodeIds[0]}` })
-
-// follow
-export const checkIfUsersFollowPlaylist = () =>
-    sendRequest({
-        endpoint: `playlists/${playlistIds[0]}/followers/contains`,
-        query: { ids: userIds },
-    })
-export const getUserFollowedArtists = () =>
-    sendRequest({
-        endpoint: `me/following`,
-        query: { type: 'artist' },
-    })
-export const getFollowingStateForArtistsOrUsers = () =>
-    sendRequest({
-        endpoint: `me/following/contains`,
-        query: { type: 'user', ids: userIds },
-    })
-
-// library
-export const getCurrentUserSavedAlbums = () =>
-    sendRequest({ endpoint: `me/albums` })
-export const checkCurrentUserSavedAlbums = () =>
-    sendRequest({
-        endpoint: `me/albums/contains`,
-        query: { ids: albumIds },
-    })
-export const getCurrentUserSavedTracks = () =>
-    sendRequest({ endpoint: `me/tracks` })
-export const checkCurrentUserSavedTracks = () =>
-    sendRequest({
-        endpoint: `me/tracks/contains`,
-        query: { ids: trackIds },
-    })
-export const getCurrentUserSavedEpisodes = () =>
-    sendRequest({ endpoint: `me/episodes` })
-export const checkCurrentUserSavedEpisodes = () =>
-    sendRequest({
-        endpoint: `me/episodes/contains`,
-        query: { ids: episodeIds },
-    })
-export const getCurrentUserSavedShows = () =>
-    sendRequest({ endpoint: `me/shows` })
-export const checkCurrentUserSavedShows = () =>
-    sendRequest({
-        endpoint: `me/shows/contains`,
-        query: { ids: showIds },
-    })
-
-// market
-export const getAvailableMarkets = () => sendRequest({ endpoint: `markets` })
-
-// personalization
-export const getUserTopArtistsAndTracks = () =>
-    sendRequest({
-        endpoint: `me/top/artists`,
-    })
-
-// player
-export const getUserAvailableDevices = () =>
-    sendRequest({
-        endpoint: `me/player/devices`,
-    })
-export const getCurrentUserRecentlyPlayedTracks = () =>
-    sendRequest({
-        endpoint: `me/player/recently-played`,
-    })
-
-// playlists
-export const getListOfCurrentUserPlaylists = () =>
-    sendRequest({
-        endpoint: `me/playlists`,
-    })
-export const getListOfUserPlaylists = () =>
-    sendRequest({
-        endpoint: `users/${userIds[0]}/playlists`,
-    })
-export const getPlaylist = () =>
-    sendRequest({
-        endpoint: `playlists/${playlistIds[0]}`,
-    })
-export const getPlaylistItems = () =>
-    sendRequest({
-        endpoint: `playlists/${playlistIds[0]}/tracks`,
-    })
-export const getPlaylistCoverImage = () =>
-    sendRequest({
-        endpoint: `playlists/${playlistIds[0]}/images`,
-    })
-
-// search
+// Search
 export const searchForItem = () =>
     sendRequest({
         endpoint: `search`,
@@ -186,40 +133,79 @@ export const searchForItem = () =>
         },
     })
 
-// shows
-export const getMultipleShows = () =>
-    sendRequest({
-        endpoint: `shows`,
-        query: { ids: showIds },
-    })
-export const getShow = () => sendRequest({ endpoint: `shows/${showIds[0]}` })
-export const getShowEpisodes = () =>
-    sendRequest({
-        endpoint: `shows/${showIds[0]}/episodes`,
-    })
-
-// tracks
-export const getMultipleTracks = () =>
-    sendRequest({
-        endpoint: `tracks`,
-        query: { ids: trackIds },
-    })
-export const getTrack = () => sendRequest({ endpoint: `tracks/${trackIds[0]}` })
-export const getAudioFeaturesForSeveralTracks = () =>
-    sendRequest({
-        endpoint: `audio-features`,
-        query: { ids: trackIds },
-    })
-export const getAudioFeaturesForTrack = () =>
-    sendRequest({
-        endpoint: `audio-features/${trackIds[0]}`,
-    })
-export const getAudioAnalysisForTrack = () =>
-    sendRequest({
-        endpoint: `audio-analysis/${trackIds[0]}`,
-    })
-
-// users
+// Users
 export const getCurrentUserProfile = () => sendRequest({ endpoint: `me` })
+export const getUserTopItems = () =>
+    sendRequest({
+        endpoint: `me/top/artists`,
+    })
 export const getUserProfile = () =>
     sendRequest({ endpoint: `users/${userIds[0]}` })
+export const getFollowedArtists = () =>
+    sendRequest({
+        endpoint: `me/following`,
+        query: { type: 'artist' },
+    })
+export const checkIfUserFollowsArtistsOrUsers = () =>
+    sendRequest({
+        endpoint: `me/following/contains`,
+        query: { type: 'user', ids: userIds },
+    })
+export const checkIfUsersFollowPlaylist = () =>
+    sendRequest({
+        endpoint: `playlists/${playlistIds[0]}/followers/contains`,
+        query: { ids: userIds },
+    })
+
+// Playlists
+export const getPlaylist = () =>
+    sendRequest({
+        endpoint: `playlists/${playlistIds[0]}`,
+    })
+export const getPlaylistItems = () =>
+    sendRequest({
+        endpoint: `playlists/${playlistIds[0]}/tracks`,
+    })
+export const getCurrentUserPlaylists = () =>
+    sendRequest({
+        endpoint: `me/playlists`,
+    })
+export const getUserPlaylists = () =>
+    sendRequest({
+        endpoint: `users/${userIds[0]}/playlists`,
+    })
+export const getFeaturedPlaylists = () =>
+    sendRequest({
+        endpoint: `browse/featured-playlists`,
+    })
+export const getCategoryPlaylists = () =>
+    sendRequest({
+        endpoint: `browse/categories/${categoryIds[0]}/playlists`,
+    })
+export const getPlaylistCoverImage = () =>
+    sendRequest({
+        endpoint: `playlists/${playlistIds[0]}/images`,
+    })
+
+// Categories
+export const getSeveralBrowseCategories = () =>
+    sendRequest({ endpoint: `browse/categories` })
+export const getSingleBrowseCategory = () =>
+    sendRequest({
+        endpoint: `browse/categories/${categoryIds[0]}`,
+    })
+
+// Genres
+export const getAvailableGenreSeeds = () =>
+    sendRequest({
+        endpoint: `recommendations/available-genre-seeds`,
+    })
+
+// Player
+export const getAvailableDevices = () =>
+    sendRequest({ endpoint: `me/player/devices` })
+export const getCurrentlyPlayingTrack = () =>
+    sendRequest({ endpoint: `me/player/recently-played` })
+
+// Markets
+export const getAvailableMarkets = () => sendRequest({ endpoint: `markets` })
