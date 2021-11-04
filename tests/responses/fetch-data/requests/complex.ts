@@ -5,12 +5,10 @@ import { runSafely, dataContains } from '..'
 import { basicReq } from '.'
 
 const complexRequest = {
-    getInformationAboutUserCurrentPlayback:
-        (): Promise<Responses.getInformationAboutUserCurrentPlayback> =>
-            sendRequest({ endpoint: `me/player` }),
-    getUserCurrentlyPlayingTrack:
-        (): Promise<Responses.getUserCurrentlyPlayingTrack> =>
-            sendRequest({ endpoint: `me/player` }),
+    getPlaybackState: (): Promise<Responses.getPlaybackState> =>
+        sendRequest({ endpoint: `me/player` }),
+    getCurrentlyPlayingTrack: (): Promise<Responses.getCurrentlyPlayingTrack> =>
+        sendRequest({ endpoint: `me/player` }),
     createPlaylist: (
         userId: string,
         name: string
@@ -30,12 +28,12 @@ const complexRequest = {
             query: { uris: uris.join() },
             application_json: true,
         }),
-    reorderOrReplacePlaylistItems: (
+    updatePlaylistItems: (
         playlistId: string,
         snapshotId?: string,
         rangeStart?: number,
         insertBefore?: number
-    ): Promise<Responses.reorderOrReplacePlaylistItems> =>
+    ): Promise<Responses.updatePlaylistItems> =>
         sendRequest({
             endpoint: `playlists/${playlistId}/tracks`,
             method: 'PUT',
@@ -45,11 +43,11 @@ const complexRequest = {
                 snapshot_id: snapshotId,
             },
         }),
-    removeItemsFromPlaylist: (
+    removePlaylistItems: (
         playlistId: string,
         trackUris: `spotify:${'track' | 'episode'}:${string}`[],
         snapshotId?: string
-    ): Promise<Responses.removeItemsFromPlaylist> =>
+    ): Promise<Responses.removePlaylistItems> =>
         sendRequest({
             endpoint: `playlists/${playlistId}/tracks`,
             method: 'DELETE',
@@ -77,13 +75,13 @@ export async function complexRes(): Promise<ComplexResponses> {
 async function playlistResponses(userId: string) {
     type ComplexPlaylistResponses = Omit<
         ComplexResponses,
-        'getInformationAboutUserCurrentPlayback' | 'getUserCurrentlyPlayingTrack'
+        'getPlaybackState' | 'getCurrentlyPlayingTrack'
     >
     const responses: ComplexPlaylistResponses = {
         createPlaylist: undefined,
         addItemsToPlaylist: undefined,
-        reorderOrReplacePlaylistItems: undefined,
-        removeItemsFromPlaylist: undefined,
+        updatePlaylistItems: undefined,
+        removePlaylistItems: undefined,
     }
 
     responses.createPlaylist = await runSafely(
@@ -107,25 +105,22 @@ async function playlistResponses(userId: string) {
         return errorFrom(complexRequest.addItemsToPlaylist, responses)
     }
 
-    responses.reorderOrReplacePlaylistItems = await runSafely(
-        complexRequest.reorderOrReplacePlaylistItems,
+    responses.updatePlaylistItems = await runSafely(
+        complexRequest.updatePlaylistItems,
         playlistId,
         responses.addItemsToPlaylist.snapshot_id,
         1,
         2
     )
-    if (typeof responses.reorderOrReplacePlaylistItems != 'object') {
-        return errorFrom(
-            complexRequest.reorderOrReplacePlaylistItems,
-            responses
-        )
+    if (typeof responses.updatePlaylistItems != 'object') {
+        return errorFrom(complexRequest.updatePlaylistItems, responses)
     }
 
-    responses.removeItemsFromPlaylist = await runSafely(
-        complexRequest.removeItemsFromPlaylist,
+    responses.removePlaylistItems = await runSafely(
+        complexRequest.removePlaylistItems,
         playlistId,
         trackUris,
-        responses.reorderOrReplacePlaylistItems.snapshot_id
+        responses.updatePlaylistItems.snapshot_id
     )
 
     // delete playlist
@@ -144,8 +139,7 @@ async function playlistResponses(userId: string) {
 }
 
 async function playerResponses(isPremium: boolean) {
-    const currentPlayback =
-        await complexRequest.getInformationAboutUserCurrentPlayback()
+    const currentPlayback = await complexRequest.getPlaybackState()
 
     if (!(currentPlayback && currentPlayback.is_playing)) {
         if (isPremium)
@@ -164,11 +158,9 @@ async function playerResponses(isPremium: boolean) {
     }
 
     return {
-        getInformationAboutUserCurrentPlayback: await runSafely(
-            complexRequest.getInformationAboutUserCurrentPlayback
-        ),
-        getUserCurrentlyPlayingTrack: await runSafely(
-            complexRequest.getUserCurrentlyPlayingTrack
+        getPlaybackState: await runSafely(complexRequest.getPlaybackState),
+        getCurrentlyPlayingTrack: await runSafely(
+            complexRequest.getCurrentlyPlayingTrack
         ),
     }
 }

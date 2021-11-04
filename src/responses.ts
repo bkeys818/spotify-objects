@@ -31,18 +31,18 @@ import {
 
 // #region Albums
 export type getAlbum = Album
-export type getMultipleAlbums = { albums: (Album | null)[] }
+export type getSeveralAlbums = { albums: (Album | null)[] }
 export type getAlbumTracks = Paging<SimplifiedTrack>
-export type getCurrentUserSavedAlbums = Paging<SavedAlbum>
-export type saveAlbumsForCurrentUser = void
-export type removeAlbumsForCurrentUser = void
-export type checkCurrentUserSavedAlbums = boolean[]
-export type getAllNewReleases = { albums: Paging<SimplifiedAlbum> }
+export type getSavedAlbums = Paging<SavedAlbum>
+export type saveAlbums = void
+export type removeAlbums = void
+export type checkSavedAlbums = boolean[]
+export type getNewReleases = { albums: Paging<SimplifiedAlbum> }
 // #endregion
 
 // #region Artists
 export type getArtist = Artist
-export type getMultipleArtists = { artists: (Artist | null)[] }
+export type getSeveralArtists = { artists: (Artist | null)[] }
 export type getArtistAlbums = Paging<SimplifiedAlbum>
 export type getArtistTopTracks = { tracks: Track[] }
 export type getArtistRelatedArtists = { artists: Artist[] }
@@ -50,35 +50,35 @@ export type getArtistRelatedArtists = { artists: Artist[] }
 
 // #region Shows
 export type getShow = Show
-export type getMultipleShows = { shows: SimplifiedShow[] }
+export type getSeveralShows = { shows: SimplifiedShow[] }
 export type getShowEpisodes = Paging<SimplifiedEpisode>
-export type getCurrentUserSavedShows = Paging<SavedShow>
-export type saveShowsForCurrentUser = void
-export type removeShowsForCurrentUser = void
-export type checkCurrentUserSavedShows = boolean[]
+export type getSavedShows = Paging<SavedShow>
+export type saveShows = void
+export type removeShows = void
+export type checkSavedShows = boolean[]
 // #endregion
 
 // #region Episodes
-export type getMultipleEpisodes = { episodes: (Episode | null)[] }
 export type getEpisode = Episode
-export type getCurrentUserSavedEpisodes = Paging<SavedEpisode>
-export type saveEpisodesForCurrentUser = void
-export type removeEpisodesForCurrentUser = void
-export type checkCurrentUserSavedEpisodes = boolean[]
+export type getSeveralEpisodes = { episodes: (Episode | null)[] }
+export type getSavedEpisodes = Paging<SavedEpisode>
+export type saveEpisodes = void
+export type removeEpisodes = void
+export type checkSavedEpisodes = boolean[]
 // #endregion
 
 // #region Tracks
 export type getTrack = Track
-export type getMultipleTracks = { tracks: (Track | null)[] }
-export type getCurrentUserSavedTracks = Paging<SavedTrack>
-export type saveTracksForCurrentUser = void
-export type removeTracksForCurrentUser = void
-export type checkCurrentUserSavedTracks = boolean[]
-export type getAudioFeaturesForSeveralTracks = {
+export type getSeveralTracks = { tracks: (Track | null)[] }
+export type getSavedTracks = Paging<SavedTrack>
+export type saveTracks = void
+export type removeTracks = void
+export type checkSavedTracks = boolean[]
+export type getTracksAudioFeatures = {
     audio_features: AudioFeatures[]
 }
-export type getAudioFeaturesForTrack = AudioFeatures
-export type getAudioAnalysisForTrack = AudioAnalysis
+export type getTrackAudioFeatures = AudioFeatures
+export type getTrackAudioAnalysis = AudioAnalysis
 export type getRecommendations = Recommendations
 // #endregion
 
@@ -103,16 +103,16 @@ type SearchResponse<T extends SearchKeys | SearchKeys[]> = T extends SearchKeys
 
 // #region Users
 export type getCurrentUserProfile = PrivateUser
-export type getUserTopArtistsAndTracks<T extends 'artists' | 'tracks'> = Paging<
+export type getUserTopItems<T extends 'artists' | 'tracks'> = Paging<
     T extends 'artists' ? Artist : Track
 >
 export type getUserProfile = PublicUser
 export type followPlaylist = void
 export type unfollowPlaylist = void
-export type getUserFollowedArtists = { artists: CursorPaging<Artist> }
+export type getFollowedArtists = { artists: CursorPaging<Artist> }
 export type followArtistsOrUsers = void
 export type unfollowArtistsOrUsers = void
-export type getFollowingStateForArtistsOrUsers = boolean[]
+export type checkIfUserFollowsArtistsOrUsers = boolean[]
 export type checkIfUsersFollowPlaylist = boolean[]
 // #endregion
 
@@ -121,49 +121,49 @@ export type getPlaylist = Playlist
 export type changePlaylistDetails = void
 export type getPlaylistItems = Paging<PlaylistTrack>
 export type addItemsToPlaylist = { snapshot_id: string }
-export type reorderOrReplacePlaylistItems = { snapshot_id: string }
-export type removeItemsFromPlaylist = { snapshot_id: string }
-export type getListOfCurrentUserPlaylists = Paging<SimplifiedPlaylist>
-export type getListOfUserPlaylists = Paging<SimplifiedPlaylist>
+export type updatePlaylistItems = { snapshot_id: string }
+export type removePlaylistItems = { snapshot_id: string }
+export type getCurrentUserPlaylists = Paging<SimplifiedPlaylist>
+export type getUserPlaylists = Paging<SimplifiedPlaylist>
 export type createPlaylist = Playlist
-export type getAllFeaturedPlaylists = {
+export type getFeaturedPlaylists = {
     message: string
     playlists: Paging<SimplifiedPlaylist>
 }
 export type getCategoryPlaylists = { playlists: Paging<SimplifiedPlaylist> }
 export type getPlaylistCoverImage = Image[]
-export type uploadCustomPlaylistCoverImage = void
+export type addCustomPlaylistCoverImage = void
 // #endregion
 
 // #region Categories
-export type getAllCategories = { categories: Paging<Category> }
-export type getCategory = Category
+export type getSeveralBrowseCategories = { categories: Paging<Category> }
+export type getSingleBrowseCategory = Category
 // #endregion
 
 // #region Genres
-export type getRecommendationGenres = { genres: string[] }
+export type getAvailableGenreSeeds = { genres: string[] }
 // #endregion
 
 // #region Player
-export type getInformationAboutUserCurrentPlayback =
+export type getPlaybackState =
     CurrentlyPlayingContext | void
     
-export type transferUserPlayback = void
-export type getUserAvailableDevices = { devices: Device[] }
-export type getUserCurrentlyPlayingTrack = CurrentlyPlayingContext | void
-export type startOrResumeUserPlayback = void
-export type pauseUserPlayback = void
-export type skipUserPlaybackToNextTrack = void
-export type skipUserPlaybackToPreviousTrack = void
-export type seekToPositionInCurrentlyPlayingTrack = void
-export type setRepeatModeOnUserPlayback = void
-export type setVolumeForUserPlayback = void
-export type toggleShuffleForUserPlayback = void
-export type getCurrentUserRecentlyPlayedTracks = Omit<
+export type transferPlayback = void
+export type getAvailableDevices = { devices: Device[] }
+export type getCurrentlyPlayingTrack = CurrentlyPlayingContext | void
+export type startOrResumePlayback = void
+export type pausePlayback = void
+export type skipToNextTrack = void
+export type skipToPreviousTrack = void
+export type seekToPosition = void
+export type setRepeatMode = void
+export type setPlaybackVolume = void
+export type togglePlaybackShuffle = void
+export type getRecentlyPlayedTracks = Omit<
     CursorPaging<PlayHistory>,
     'total'
 >
-export type addItemToQueue = void
+export type addItemToPlaybackQueue = void
 // #endregion
 
 
