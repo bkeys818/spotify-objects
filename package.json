@@ -40,5 +40,8 @@
         "postpublish": "rm -r types",
         "update-data": "ts-node responses/fetch-data",
         "postupdate-data": "prettier --write responses/data.json"
+    },
+    "np": {
+        "message": "🔖 v%s"
     }
 }
